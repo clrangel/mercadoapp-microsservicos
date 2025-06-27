@@ -40,4 +40,10 @@ public class UsuarioController {
         return ResponseEntity.created(uri).body(obj);
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id){
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
