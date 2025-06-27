@@ -24,6 +24,13 @@ public class UsuarioController {
         return ResponseEntity.ok().body(list);
     }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Usuario> obterPorId(@PathVariable Long id){
+        Usuario obj = service.obterPorId(id);
+        return ResponseEntity.ok().body(obj);
+    }
+
+
     @PostMapping
     public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario obj){
         obj = service.cadastrarUsuario(obj);
