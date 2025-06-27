@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -18,9 +19,9 @@ public class UsuarioController {
     private UsuarioService service;
 
     @GetMapping
-    public ResponseEntity<UsuarioDto> findAll(){
-        UsuarioDto u = new UsuarioDto(1L, "Maria", "maria@gmail.com", "99999999");
-        return ResponseEntity.ok().body(u);
+    public ResponseEntity<List<Usuario>> findAll(){
+        List<Usuario> list = service.obterTodos();
+        return ResponseEntity.ok().body(list);
     }
 
     @PostMapping
