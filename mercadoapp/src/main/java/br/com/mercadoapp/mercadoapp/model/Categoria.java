@@ -18,6 +18,7 @@ public class Categoria implements Serializable {
     private String nomeCategoria;
 
     //Conjunto de produtos
+    @ManyToMany(mappedBy = "categorias")
     private Set<Produto> produtos = new HashSet<>();
 
     public Categoria() {
