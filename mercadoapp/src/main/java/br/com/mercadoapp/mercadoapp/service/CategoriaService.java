@@ -26,5 +26,14 @@ public class CategoriaService {
         repository.deleteById(id);
     }
 
+    @Transactional
+    public Categoria atualizarCategoria(Long id, Categoria categoriaAtualizada) {
+        Categoria categoriaExistente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Categoria com ID " + id + " não encontrada."));
+
+        categoriaExistente.setNomeCategoria(categoriaAtualizada.getNomeCategoria());
+
+        return repository.save(categoriaExistente);
+    }
 
 }

@@ -30,4 +30,11 @@ public class CategoriaController {
         return ResponseEntity.noContent().build(); // HTTP 204
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Categoria> atualizarCategoria(@PathVariable Long id, @RequestBody Categoria categoria) {
+        Categoria categoriaAtualizada = service.atualizarCategoria(id, categoria);
+        return ResponseEntity.ok(categoriaAtualizada);
+    }
+
+
 }
