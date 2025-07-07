@@ -2,6 +2,7 @@ package br.com.mercadoapp.mercadoapp.service;
 
 import br.com.mercadoapp.mercadoapp.model.Categoria;
 import br.com.mercadoapp.mercadoapp.repository.CategoriaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,14 @@ public class CategoriaService {
     @Transactional
     public Categoria cadastrarCategoria(Categoria categoria) {
         return repository.save(categoria);
+    }
+
+    @Transactional
+    public void deletarCategoria(Long id) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("Categoria com ID " + id + " não encontrada.");
+        }
+        repository.deleteById(id);
     }
 
 
