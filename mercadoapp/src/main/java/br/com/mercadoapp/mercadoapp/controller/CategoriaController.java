@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
@@ -34,6 +35,12 @@ public class CategoriaController {
     public ResponseEntity<Categoria> atualizarCategoria(@PathVariable Long id, @RequestBody Categoria categoria) {
         Categoria categoriaAtualizada = service.atualizarCategoria(id, categoria);
         return ResponseEntity.ok(categoriaAtualizada);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Categoria>> listarCategorias() {
+        List<Categoria> categorias = service.listarCategorias();
+        return ResponseEntity.ok(categorias);
     }
 
 

@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CategoriaService {
 
@@ -36,4 +38,7 @@ public class CategoriaService {
         return repository.save(categoriaExistente);
     }
 
+    public List<Categoria> listarCategorias() {
+        return repository.findAll();
+    }
 }

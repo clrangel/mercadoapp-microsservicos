@@ -1,5 +1,6 @@
 package br.com.mercadoapp.mercadoapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ public class Categoria implements Serializable {
     private String nomeCategoria;
 
     //Conjunto de produtos
+    @JsonIgnore
     @ManyToMany(mappedBy = "categorias")
     private Set<Produto> produtos = new HashSet<>();
 
