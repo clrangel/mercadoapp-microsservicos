@@ -27,4 +27,11 @@ public class ProdutoController {
         produtoService.deletarProduto(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProdutoResponseDTO> atualizarProduto(@PathVariable Long id, @RequestBody @Valid ProdutoRequestDTO dto) {
+        ProdutoResponseDTO atualizado = produtoService.atualizarProduto(id, dto);
+        return ResponseEntity.ok(atualizado);
+    }
+
 }

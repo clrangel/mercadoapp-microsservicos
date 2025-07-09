@@ -7,6 +7,7 @@ import br.com.mercadoapp.mercadoapp.model.Produto;
 import br.com.mercadoapp.mercadoapp.repository.CategoriaRepository;
 import br.com.mercadoapp.mercadoapp.repository.ProdutoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class ProdutoService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Transactional
     public ProdutoResponseDTO cadastrarProduto(ProdutoRequestDTO dto) {
         Produto produto = new Produto();
         produto.setNome(dto.nome());
@@ -50,11 +52,47 @@ public class ProdutoService {
         );
     }
 
+    @Transactional
     public void deletarProduto(Long id) {
         if (!produtoRepository.existsById(id)) {
             throw new EntityNotFoundException("Produto com ID " + id + " não encontrado.");
         }
         produtoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public ProdutoResponseDTO atualizarProduto(Long id, ProdutoRequestDTO dto) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto com ID " + id + " não encontrado."));
+
+        // Atualiza os campos do produto
+        produto.setNome(dto.nome());
+        produto.setDescricao(dto.descricao());
+        produto.setPreco(dto.preco());
+
+        // Atualiza as categorias
+        Set<Categoria> categorias = dto.categoriaIds().stream()
+                .map(catId -> categoriaRepository.findById(catId)
+                        .orElseThrow(() -> new RuntimeException("Categoria com ID " + catId + " não encontrada.")))
+                .collect(Collectors.toSet());
+
+        produto.getCategorias().clear();
+        produto.getCategorias().addAll(categorias);
+
+        Produto atualizado = produtoRepository.save(produto);
+
+        // Mapeamento manual para ProdutoResponseDTO
+        Set<String> nomesCategorias = atualizado.getCategorias().stream()
+                .map(Categoria::getNomeCategoria)
+                .collect(Collectors.toSet());
+
+        return new ProdutoResponseDTO(
+                atualizado.getId(),
+                atualizado.getNome(),
+                atualizado.getDescricao(),
+                atualizado.getPreco(),
+                nomesCategorias
+        );
     }
 }
 
