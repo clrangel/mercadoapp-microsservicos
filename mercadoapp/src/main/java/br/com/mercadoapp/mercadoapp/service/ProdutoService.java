@@ -6,6 +6,7 @@ import br.com.mercadoapp.mercadoapp.model.Categoria;
 import br.com.mercadoapp.mercadoapp.model.Produto;
 import br.com.mercadoapp.mercadoapp.repository.CategoriaRepository;
 import br.com.mercadoapp.mercadoapp.repository.ProdutoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,13 @@ public class ProdutoService {
                 salvo.getPreco(),
                 nomesCategorias
         );
+    }
+
+    public void deletarProduto(Long id) {
+        if (!produtoRepository.existsById(id)) {
+            throw new EntityNotFoundException("Produto com ID " + id + " não encontrado.");
+        }
+        produtoRepository.deleteById(id);
     }
 }
 
