@@ -41,4 +41,9 @@ public class CategoriaService {
     public List<Categoria> listarCategorias() {
         return repository.findAll();
     }
+
+    public Categoria buscarCategoriaPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Categoria com ID " + id + " não encontrada."));
+    }
 }

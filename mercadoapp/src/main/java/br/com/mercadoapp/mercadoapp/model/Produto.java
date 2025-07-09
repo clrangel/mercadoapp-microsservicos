@@ -24,7 +24,7 @@ public class Produto implements Serializable {
 
     @NotNull
     @Size(max = 500)
-    private String Descricao;
+    private String descricao;
     private Double preco;
     //private String imgUrl;
 
@@ -42,7 +42,7 @@ public class Produto implements Serializable {
     public Produto(Long id, String nome, String descricao, Double preco) {
         this.id = id;
         this.nome = nome;
-        Descricao = descricao;
+        descricao = descricao;
         this.preco = preco;
     }
 
@@ -63,11 +63,11 @@ public class Produto implements Serializable {
     }
 
     public String getDescricao() {
-        return Descricao;
+        return descricao;
     }
 
     public void setDescricao(String descricao) {
-        Descricao = descricao;
+        descricao = descricao;
     }
 
     public Double getPreco() {
