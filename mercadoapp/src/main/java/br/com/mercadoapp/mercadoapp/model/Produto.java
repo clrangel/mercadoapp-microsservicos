@@ -42,7 +42,7 @@ public class Produto implements Serializable {
     public Produto(Long id, String nome, String descricao, Double preco) {
         this.id = id;
         this.nome = nome;
-        descricao = descricao;
+        this.descricao = descricao;
         this.preco = preco;
     }
 
@@ -67,7 +67,7 @@ public class Produto implements Serializable {
     }
 
     public void setDescricao(String descricao) {
-        descricao = descricao;
+        this.descricao = descricao;
     }
 
     public Double getPreco() {
