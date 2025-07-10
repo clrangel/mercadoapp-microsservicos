@@ -44,7 +44,7 @@ public class ProdutoService {
                 .collect(Collectors.toSet());
 
         return new ProdutoResponseDTO(
-                salvo.getId(),
+                //salvo.getId(),
                 salvo.getNome(),
                 salvo.getDescricao(),
                 salvo.getPreco(),
@@ -87,10 +87,29 @@ public class ProdutoService {
                 .collect(Collectors.toSet());
 
         return new ProdutoResponseDTO(
-                atualizado.getId(),
+                //atualizado.getId(),
                 atualizado.getNome(),
                 atualizado.getDescricao(),
                 atualizado.getPreco(),
+                nomesCategorias
+        );
+    }
+
+    public ProdutoResponseDTO buscarProdutoPorId(Long id) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Produto com ID " + id + " não encontrado."));
+
+        //Mapeamento manual - ProdutoResponseDTO
+        Set<String> nomesCategorias = produto.getCategorias().stream()
+                .map(Categoria::getNomeCategoria)
+                .collect(Collectors.toSet());
+
+        return new ProdutoResponseDTO(
+                //produto.getId(),
+                produto.getNome(),
+                produto.getDescricao(),
+                produto.getPreco(),
                 nomesCategorias
         );
     }
