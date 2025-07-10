@@ -5,6 +5,9 @@ import br.com.mercadoapp.mercadoapp.dto.ProdutoResponseDTO;
 import br.com.mercadoapp.mercadoapp.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,4 +42,16 @@ public class ProdutoController {
         ProdutoResponseDTO dto = produtoService.buscarProdutoPorId(id);
         return ResponseEntity.ok(dto);
     }
+
+    @GetMapping("/paginado")
+    public ResponseEntity<Page<ProdutoResponseDTO>> listarProdutos(
+            @RequestParam(defaultValue = "0") int page) {
+
+        Pageable pageable = PageRequest.of(page, 10); // 10 itens por página
+        Page<ProdutoResponseDTO> pagina = produtoService.listarProdutos(pageable);
+        return ResponseEntity.ok(pagina);
+    }
+
+
+
 }

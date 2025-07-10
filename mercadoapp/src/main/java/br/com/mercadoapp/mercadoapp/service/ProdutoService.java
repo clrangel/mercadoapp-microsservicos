@@ -9,6 +9,8 @@ import br.com.mercadoapp.mercadoapp.repository.ProdutoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -113,5 +115,27 @@ public class ProdutoService {
                 nomesCategorias
         );
     }
+
+    public Page<ProdutoResponseDTO> listarProdutos(Pageable pageable) {
+        Page<Produto> produtos = produtoRepository.findAll(pageable);
+
+        return produtos.map(produto -> {
+            Set<String> nomesCategorias = produto.getCategorias().stream()
+                    .map(Categoria::getNomeCategoria)
+                    .collect(Collectors.toSet());
+
+            return new ProdutoResponseDTO(
+                    //produto.getId(),
+                    produto.getNome(),
+                    produto.getDescricao(),
+                    produto.getPreco(),
+                    nomesCategorias
+            );
+        });
+    }
+
+
+
+
 }
 
