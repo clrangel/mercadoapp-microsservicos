@@ -6,6 +6,7 @@ import br.com.mercadoapp.mercadoapp.model.Categoria;
 import br.com.mercadoapp.mercadoapp.model.Produto;
 import br.com.mercadoapp.mercadoapp.repository.CategoriaRepository;
 import br.com.mercadoapp.mercadoapp.repository.ProdutoRepository;
+import br.com.mercadoapp.mercadoapp.specification.ProdutoSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +135,23 @@ public class ProdutoService {
         });
     }
 
+    public Page<ProdutoResponseDTO> buscarPorFrase(String frase, Pageable pageable) {
+        var spec = ProdutoSpecifications.nomeOuDescricaoContemTodasPalavras(frase);
 
+        return produtoRepository.findAll(spec, pageable)
+                .map(produto -> {
+                    Set<String> nomesCategorias = produto.getCategorias().stream()
+                            .map(categoria -> categoria.getNomeCategoria())
+                            .collect(Collectors.toSet());
+
+                    return new ProdutoResponseDTO(
+                            produto.getNome(),
+                            produto.getDescricao(),
+                            produto.getPreco(),
+                            nomesCategorias
+                    );
+                });
+    }
 
 
 }
