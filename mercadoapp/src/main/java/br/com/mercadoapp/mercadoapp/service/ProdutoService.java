@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -151,6 +152,20 @@ public class ProdutoService {
                             nomesCategorias
                     );
                 });
+    }
+
+    public Page<ProdutoResponseDTO> buscarPorCategoria(Long categoriaId, Pageable pageable) {
+        Specification<Produto> spec = ProdutoSpecifications.buscarPorCategoria(categoriaId);
+
+        return produtoRepository.findAll(spec, pageable)
+                .map(produto -> new ProdutoResponseDTO(
+                        produto.getNome(),
+                        produto.getDescricao(),
+                        produto.getPreco(),
+                        produto.getCategorias().stream()
+                                .map(Categoria::getNomeCategoria)
+                                .collect(Collectors.toSet())
+                ));
     }
 
 

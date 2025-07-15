@@ -23,4 +23,10 @@ public class ProdutoSpecifications {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    public static Specification<Produto> buscarPorCategoria(Long categoriaId) {
+        return (root, query, cb) -> cb.equal(
+                root.join("categorias").get("id"), categoriaId
+        );
+    }
 }

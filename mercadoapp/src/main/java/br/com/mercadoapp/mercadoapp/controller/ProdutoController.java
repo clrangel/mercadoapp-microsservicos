@@ -9,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.PagedModel;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +20,8 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-    @Autowired
-    private PagedResourcesAssembler<ProdutoResponseDTO> pagedResourcesAssembler;
+    //@Autowired
+    //private PagedResourcesAssembler<ProdutoResponseDTO> pagedResourcesAssembler;
 
     @PostMapping
     public ResponseEntity<ProdutoResponseDTO> cadastrarProduto(@RequestBody @Valid ProdutoRequestDTO dto) {
@@ -65,6 +62,15 @@ public class ProdutoController {
             Pageable pageable) {
 
         Page<ProdutoResponseDTO> page = produtoService.buscarPorFrase(frase, pageable);
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/buscar-por-categoria")
+    public ResponseEntity<Page<ProdutoResponseDTO>> buscarPorCategoria(
+            @RequestParam Long categoriaId,
+            Pageable pageable) {
+
+        Page<ProdutoResponseDTO> page = produtoService.buscarPorCategoria(categoriaId, pageable);
         return ResponseEntity.ok(page);
     }
 
