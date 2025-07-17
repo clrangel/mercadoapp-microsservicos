@@ -73,6 +73,14 @@ public class ItemPedido implements Serializable {
         this.produtoId = produtoId;
     }
 
+    public BigDecimal subTotal() {
+        if (valorUnitario == null || quantidade == null) {
+            return BigDecimal.ZERO;
+        }
+        return valorUnitario.multiply(BigDecimal.valueOf(quantidade));
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
