@@ -85,6 +85,12 @@ public class Pedido implements Serializable {
         this.usuarioId = usuarioId;
     }
 
+    public void calcularValorTotal() {
+        this.valorTotal = this.itens.stream()
+                .map(ItemPedido::subTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
