@@ -27,6 +27,9 @@ public class Pedido implements Serializable {
 
     private Long usuarioId;
 
+    public Pedido() {
+    }
+
     public Pedido(UUID id, Instant dateMoment, List<ItemPedido> itens, BigDecimal valorTotal, Status status, Long usuarioId) {
         this.id = id;
         this.dateMoment = dateMoment;

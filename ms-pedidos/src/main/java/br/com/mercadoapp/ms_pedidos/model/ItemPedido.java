@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
-@Table(name = "itens")
+@Table(name = "item_pedidos")
 public class ItemPedido implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -24,6 +24,9 @@ public class ItemPedido implements Serializable {
     private Pedido pedido;
 
     private Long produtoId;
+
+    public ItemPedido() {
+    }
 
     public ItemPedido(Long id, Integer quantidade, BigDecimal valorUnitario, Pedido pedido, Long produtoId) {
         this.id = id;
