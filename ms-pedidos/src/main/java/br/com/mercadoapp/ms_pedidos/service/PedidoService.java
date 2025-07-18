@@ -7,11 +7,14 @@ import br.com.mercadoapp.ms_pedidos.model.ItemPedido;
 import br.com.mercadoapp.ms_pedidos.model.Pedido;
 import br.com.mercadoapp.ms_pedidos.model.Status;
 import br.com.mercadoapp.ms_pedidos.repository.PedidoRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,4 +69,13 @@ public class PedidoService {
                         .collect(Collectors.toList())
         );
     }
+
+    @Transactional
+    public void deletarPedido(UUID id) {
+        Pedido pedido = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido com ID " + id + " não encontrado."));
+
+        repository.delete(pedido);
+    }
+
 }
