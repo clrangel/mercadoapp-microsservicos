@@ -10,6 +10,8 @@ import br.com.mercadoapp.ms_pedidos.repository.PedidoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -68,6 +70,27 @@ public class PedidoService {
                                 item.getValorUnitario()))
                         .collect(Collectors.toList())
         );
+    }
+
+    //Vizualizar todos os pedidos
+    //Metodo para testar o API Gateway no navegador
+    //Atualizar esse metodo futuramente
+    public Page<PedidoResponseDto> obterTodos(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(pedido -> new PedidoResponseDto(
+                        pedido.getId(),
+                        pedido.getDateMoment(),
+                        pedido.getValorTotal(),
+                        pedido.getStatus(),
+                        pedido.getUsuarioId(),
+                        pedido.getItens().stream()
+                                .map(item -> new ItemPedidoResponseDTO(
+                                        item.getId(),
+                                        item.getProdutoId(),
+                                        item.getQuantidade(),
+                                        item.getValorUnitario()))
+                                .collect(Collectors.toList())
+                ));
     }
 
     @Transactional
