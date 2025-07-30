@@ -5,6 +5,7 @@ import br.com.mercadoapp.ms_pedidos.dto.PedidoResponseDto;
 import br.com.mercadoapp.ms_pedidos.service.PedidoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,15 @@ public class PedidoController {
     public ResponseEntity<Void> deletarPedido(@PathVariable UUID id) {
         service.deletarPedido(id);
         return ResponseEntity.noContent().build();
+    }
+
+    //Verifica o balanceamento de carga entre as instâncias
+    //Endpoint usado para identificar qual instância do microsserviço respondeu à requisição.
+    //Útil para testes de balanceamento de carga em ambientes com múltiplas instâncias.
+    @GetMapping("/response")
+    public String obterPorta(@Value("${local.server.port}") String porta) {
+        return String.format("Resposta vinda da porta %s", porta);
+
     }
 
 }
