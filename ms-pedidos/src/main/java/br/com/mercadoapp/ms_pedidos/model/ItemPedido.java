@@ -15,7 +15,7 @@ public class ItemPedido implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //private String nomeProduto;
+    private String nomeProduto;
     private Integer quantidade;
     private BigDecimal valorUnitario;
 
@@ -29,8 +29,9 @@ public class ItemPedido implements Serializable {
     public ItemPedido() {
     }
 
-    public ItemPedido(Long id, Integer quantidade, BigDecimal valorUnitario, Pedido pedido, Long produtoId) {
+    public ItemPedido(Long id, String nomeProduto, Integer quantidade, BigDecimal valorUnitario, Pedido pedido, Long produtoId) {
         this.id = id;
+        this.nomeProduto = nomeProduto;
         this.quantidade = quantidade;
         this.valorUnitario = valorUnitario;
         this.pedido = pedido;
@@ -43,6 +44,14 @@ public class ItemPedido implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getNomeProduto() {
+        return nomeProduto;
+    }
+
+    public void setNomeProduto(String nomeProduto) {
+        this.nomeProduto = nomeProduto;
     }
 
     public Integer getQuantidade() {
