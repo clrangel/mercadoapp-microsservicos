@@ -3,10 +3,12 @@ package br.com.mercadoapp.ms_pedidos.service;
 import br.com.mercadoapp.ms_pedidos.dto.ItemPedidoResponseDTO;
 import br.com.mercadoapp.ms_pedidos.dto.PedidoRequestDto;
 import br.com.mercadoapp.ms_pedidos.dto.PedidoResponseDto;
+import br.com.mercadoapp.ms_pedidos.dto.ProdutoResponseDto;
 import br.com.mercadoapp.ms_pedidos.model.ItemPedido;
 import br.com.mercadoapp.ms_pedidos.model.Pedido;
 import br.com.mercadoapp.ms_pedidos.model.Status;
 import br.com.mercadoapp.ms_pedidos.repository.PedidoRepository;
+import br.com.mercadoapp.ms_pedidos.utils.ProdutoClient;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,11 @@ public class PedidoService {
 
     private final PedidoRepository repository;
 
-    public PedidoService(PedidoRepository repository) {
+    private final ProdutoClient produtoClient;
+
+    public PedidoService(PedidoRepository repository, ProdutoClient produtoClient) {
         this.repository = repository;
+        this.produtoClient = produtoClient;
     }
 
     public PedidoResponseDto cadastrarPedido(PedidoRequestDto dto) {
@@ -38,8 +43,11 @@ public class PedidoService {
         // Montar itens do pedido
         List<ItemPedido> itens = dto.itens().stream()
                 .map(itemDto -> {
+                    ProdutoResponseDto produto = produtoClient.buscarPorId(itemDto.produtoId());
+
                     ItemPedido item = new ItemPedido();
                     item.setProdutoId(itemDto.produtoId());
+                    item.setNomeProduto(produto.nome());
                     item.setQuantidade(itemDto.quantidade());
                     item.setValorUnitario(itemDto.valorUnitario());
                     item.setPedido(pedido);  // link bidirecional
@@ -66,6 +74,7 @@ public class PedidoService {
                         .map(item -> new ItemPedidoResponseDTO(
                                 item.getId(),
                                 item.getProdutoId(),
+                                item.getNomeProduto(),
                                 item.getQuantidade(),
                                 item.getValorUnitario()))
                         .collect(Collectors.toList())
@@ -87,6 +96,7 @@ public class PedidoService {
                                 .map(item -> new ItemPedidoResponseDTO(
                                         item.getId(),
                                         item.getProdutoId(),
+                                        item.getNomeProduto(),
                                         item.getQuantidade(),
                                         item.getValorUnitario()))
                                 .collect(Collectors.toList())
