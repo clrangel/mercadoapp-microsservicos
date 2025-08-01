@@ -103,6 +103,28 @@ public class PedidoService {
                 ));
     }
 
+    public PedidoResponseDto buscarPorId(UUID id) {
+        Pedido pedido = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido com ID " + id + " não encontrado"));
+
+        return new PedidoResponseDto(
+                pedido.getId(),
+                pedido.getDateMoment(),
+                pedido.getValorTotal(),
+                pedido.getStatus(),
+                pedido.getUsuarioId(),
+                pedido.getItens().stream()
+                        .map(item -> new ItemPedidoResponseDTO(
+                                item.getId(),
+                                item.getProdutoId(),
+                                item.getNomeProduto(),
+                                item.getQuantidade(),
+                                item.getValorUnitario()))
+                        .collect(Collectors.toList())
+        );
+    }
+
+
     @Transactional
     public void deletarPedido(UUID id) {
         Pedido pedido = repository.findById(id)

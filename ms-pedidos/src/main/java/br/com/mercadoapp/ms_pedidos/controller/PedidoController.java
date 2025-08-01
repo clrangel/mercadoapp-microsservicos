@@ -44,6 +44,11 @@ public class PedidoController {
         return ResponseEntity.ok(service.obterTodos(pageable));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoResponseDto> buscarPorId(@PathVariable UUID id) {
+        PedidoResponseDto pedidoDto = service.buscarPorId(id);
+        return ResponseEntity.ok(pedidoDto);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarPedido(@PathVariable UUID id) {
