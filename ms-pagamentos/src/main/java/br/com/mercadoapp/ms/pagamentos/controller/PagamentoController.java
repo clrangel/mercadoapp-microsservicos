@@ -6,6 +6,7 @@ import br.com.mercadoapp.ms.pagamentos.model.Pagamento;
 import br.com.mercadoapp.ms.pagamentos.service.PagamentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,18 +22,8 @@ public class PagamentoController {
 
     @PostMapping
     public ResponseEntity<PagamentoResponseDto> criarPagamento(@Valid @RequestBody PagamentoRequestDto dto) {
-        Pagamento pagamentoCriado = pagamentoService.criarPagamento(dto);
+        PagamentoResponseDto pagamento = pagamentoService.criarPagamento(dto);
 
-        // Mapear entidade para DTO de resposta
-        PagamentoResponseDto responseDto = new PagamentoResponseDto(
-                pagamentoCriado.getId(),
-                pagamentoCriado.getPedidoId(),
-                pagamentoCriado.getValor(),
-                pagamentoCriado.getFormaPagamento(),
-                pagamentoCriado.getStatus(),
-                pagamentoCriado.getDataPagamento()
-        );
-
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagamento);
     }
 }
