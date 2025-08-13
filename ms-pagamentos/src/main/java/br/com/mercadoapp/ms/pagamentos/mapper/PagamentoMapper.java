@@ -10,11 +10,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PagamentoMapper {
 
-    // Converte Request DTO para Entidade
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "dataPagamento", ignore = true)
-    @Mapping(target = "valor", ignore = true)
+
+    // Converte Request DTO para Entidade
     Pagamento toEntity(PagamentoRequestDto dto);
 
     // Converte Entidade para Response DTO

@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class PagamentoService {
 
     private final PagamentoRepository pagamentoRepository;
@@ -24,6 +24,14 @@ public class PagamentoService {
     private final PedidoClient pedidoClient;
 
     private final PagamentoMapper pagamentoMapper;
+
+    //Problemas com o Lombok
+    //Não consegui resolver o erro ao compilar o projeto com a utilização do @RequiredArgsConstructor, então criei o construtor para que o erro parasse e eu pudesse continuar o projeto.
+    public PagamentoService(PagamentoRepository pagamentoRepository, PedidoClient pedidoClient, PagamentoMapper pagamentoMapper) {
+        this.pagamentoRepository = pagamentoRepository;
+        this.pedidoClient = pedidoClient;
+        this.pagamentoMapper = pagamentoMapper;
+    }
 
     public PagamentoResponseDto criarPagamento(PagamentoRequestDto dto) {
         // Busca os dados do pedido via Feign Client
@@ -33,10 +41,12 @@ public class PagamentoService {
         Pagamento pagamento = pagamentoMapper.toEntity(dto);
 
         // Preenche os dados adicionais que não estão no DTO
-        pagamento.setPedidoId(pedido.id());
-        pagamento.setValor(pedido.valorTotal());
+        pagamento.setId(null);
         pagamento.setStatus(StatusPagamento.AGUARDANDO_PAGAMENTO);
         pagamento.setDataPagamento(Instant.now());
+        pagamento.setFormaPagamento(dto.formaPagamento());
+        pagamento.setValor(pedido.valorTotal());
+        pagamento.setPedidoId(pedido.id());
 
         // Salva no banco
         Pagamento pagamentoSalvo = pagamentoRepository.save(pagamento);
