@@ -13,6 +13,15 @@ public record PedidoResponseDto(
         BigDecimal valorTotal,
         Status status,
         Long usuarioId,
+        List<ItemPedidoResponseDTO> itens
+) {}
+/*
+public record PedidoResponseDto(
+        UUID id,
+        Instant dateMoment,
+        BigDecimal valorTotal,
+        Status status,
+        Long usuarioId,
         List<ItemPedidoDto> itens
 ) {}
 
@@ -23,3 +32,4 @@ record ItemPedidoDto(
         Integer quantidade,
         BigDecimal valorUnitario
 ) {}
+*/
