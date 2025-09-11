@@ -1,5 +1,6 @@
 package br.com.mercadoapp.ms.pagamentos.controller;
 
+import br.com.mercadoapp.ms.pagamentos.dto.AutorizacaoDto;
 import br.com.mercadoapp.ms.pagamentos.dto.PagamentoRequestDto;
 import br.com.mercadoapp.ms.pagamentos.dto.PagamentoResponseDto;
 import br.com.mercadoapp.ms.pagamentos.model.Pagamento;
@@ -35,5 +36,10 @@ public class PagamentoController {
     public String obterPorta(@Value("${local.server.port}") String porta) {
         return String.format("Resposta vinda da porta %s", porta);
 
+    }
+
+    @GetMapping("/autorizacao/{id}")
+    public AutorizacaoDto obterAutorizacaoPagamento(@PathVariable String id) {
+        return pagamentoService.autorizarPagamento(id);
     }
 }

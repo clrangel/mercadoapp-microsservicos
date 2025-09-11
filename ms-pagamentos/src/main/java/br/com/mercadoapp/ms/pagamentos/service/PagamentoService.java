@@ -2,10 +2,12 @@ package br.com.mercadoapp.ms.pagamentos.service;
 
 import br.com.mercadoapp.ms.pagamentos.client.PedidoClient;
 import br.com.mercadoapp.ms.pagamentos.client.dto.PedidoResponseDto;
+import br.com.mercadoapp.ms.pagamentos.dto.AutorizacaoDto;
 import br.com.mercadoapp.ms.pagamentos.dto.PagamentoRequestDto;
 import br.com.mercadoapp.ms.pagamentos.dto.PagamentoResponseDto;
 import br.com.mercadoapp.ms.pagamentos.mapper.PagamentoMapper;
 import br.com.mercadoapp.ms.pagamentos.model.FormaPagamento;
+import br.com.mercadoapp.ms.pagamentos.model.GeradorAutorizacao;
 import br.com.mercadoapp.ms.pagamentos.model.Pagamento;
 import br.com.mercadoapp.ms.pagamentos.model.StatusPagamento;
 import br.com.mercadoapp.ms.pagamentos.repository.PagamentoRepository;
@@ -54,4 +56,27 @@ public class PagamentoService {
         // Converte a entidade salva para DTO de resposta
         return pagamentoMapper.toDto(pagamentoSalvo);
     }
+
+    // Atualiza o status do pagamento existente
+    public AutorizacaoDto autorizarPagamento(String id) {
+        UUID pedidoId = UUID.fromString(id);
+
+        // Busca o pagamento pelo pedidoId
+        Pagamento pagamento = pagamentoRepository.findByPedidoId(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado para o pedido " + id));
+
+        // Simula status aprovado/recusado
+        StatusPagamento status = GeradorAutorizacao.getRandomBoolean()
+                ? StatusPagamento.APROVADO
+                : StatusPagamento.RECUSADO;
+
+        pagamento.setStatus(status);
+        pagamento.setDataPagamento(Instant.now());
+
+        pagamentoRepository.save(pagamento);
+
+        return new AutorizacaoDto(pagamento.getPedidoId().toString(), pagamento.getStatus());
+    }
+
+
 }
