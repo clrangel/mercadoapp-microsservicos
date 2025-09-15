@@ -1,4 +1,4 @@
-package br.com.mercadoapp.ms_pedidos.utils;
+package br.com.mercadoapp.ms_pedidos.client;
 
 import br.com.mercadoapp.ms_pedidos.dto.ProdutoResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
