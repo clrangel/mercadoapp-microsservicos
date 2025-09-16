@@ -1,9 +1,7 @@
 package br.com.mercadoapp.ms_pedidos.service;
 
-import br.com.mercadoapp.ms_pedidos.dto.ItemPedidoResponseDTO;
-import br.com.mercadoapp.ms_pedidos.dto.PedidoRequestDto;
-import br.com.mercadoapp.ms_pedidos.dto.PedidoResponseDto;
-import br.com.mercadoapp.ms_pedidos.dto.ProdutoResponseDto;
+import br.com.mercadoapp.ms_pedidos.client.AutorizacaoPagamentoClient;
+import br.com.mercadoapp.ms_pedidos.dto.*;
 import br.com.mercadoapp.ms_pedidos.model.ItemPedido;
 import br.com.mercadoapp.ms_pedidos.model.Pedido;
 import br.com.mercadoapp.ms_pedidos.model.Status;
@@ -27,9 +25,12 @@ public class PedidoService {
 
     private final ProdutoClient produtoClient;
 
-    public PedidoService(PedidoRepository repository, ProdutoClient produtoClient) {
+    private final AutorizacaoPagamentoClient autorizacaoPagamentoClient;
+
+    public PedidoService(PedidoRepository repository, ProdutoClient produtoClient, AutorizacaoPagamentoClient autorizacaoPagamentoClient) {
         this.repository = repository;
         this.produtoClient = produtoClient;
+        this.autorizacaoPagamentoClient = autorizacaoPagamentoClient;
     }
 
     public PedidoResponseDto cadastrarPedido(PedidoRequestDto dto) {
@@ -59,8 +60,15 @@ public class PedidoService {
         // Calcular valor total
         pedido.calcularValorTotal();
 
-        // Salvar pedido
+        // Salvar pedido inicialmente
         Pedido pedidoSalvo = repository.save(pedido);
+
+        // Obter status de pagamento (consulta ao ms-pagamentos via FeignClient)
+        Status statusPagamento = obterStatusPagamento(pedidoSalvo.getId().toString());
+        pedidoSalvo.setStatus(statusPagamento);
+
+        // Atualizar pedido com o status correto
+        pedidoSalvo = repository.save(pedidoSalvo);
 
         // Montar e retornar DTO de resposta
         return new PedidoResponseDto(
@@ -130,6 +138,15 @@ public class PedidoService {
                 .orElseThrow(() -> new EntityNotFoundException("Pedido com ID " + id + " não encontrado."));
 
         repository.delete(pedido);
+    }
+
+    private Status obterStatusPagamento(String id) {
+        AutorizacaoDto autorizacao = autorizacaoPagamentoClient.obterAutorizacao(id);
+        if (autorizacao.status().equalsIgnoreCase("autorizado")) {
+            return Status.PREPARANDO;
+        }
+
+        return Status.RECUSADO;
     }
 
 }
