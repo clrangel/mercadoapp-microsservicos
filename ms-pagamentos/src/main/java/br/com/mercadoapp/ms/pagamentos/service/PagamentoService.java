@@ -14,6 +14,7 @@ import br.com.mercadoapp.ms.pagamentos.repository.PagamentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -61,22 +62,29 @@ public class PagamentoService {
     public AutorizacaoDto autorizarPagamento(String id) {
         UUID pedidoId = UUID.fromString(id);
 
-        // Busca o pagamento pelo pedidoId
+        // Se existe, pega; se não, cria um novo pagamento mínimo (evita 500)
         Pagamento pagamento = pagamentoRepository.findByPedidoId(pedidoId)
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado para o pedido " + id));
+                .orElseGet(() -> {
+                    Pagamento p = new Pagamento();
+                    p.setPedidoId(pedidoId);
+                    p.setValor(BigDecimal.ZERO);
+                    p.setFormaPagamento(null); // ou uma forma default se quiser
+                    p.setStatus(StatusPagamento.AGUARDANDO_PAGAMENTO);
+                    p.setDataPagamento(Instant.now());
+                    return pagamentoRepository.save(p);
+                });
 
         // Simula status aprovado/recusado
-        StatusPagamento status = GeradorAutorizacao.getRandomBoolean()
+        StatusPagamento novoStatus = GeradorAutorizacao.getRandomBoolean()
                 ? StatusPagamento.APROVADO
                 : StatusPagamento.RECUSADO;
 
-        pagamento.setStatus(status);
+        pagamento.setStatus(novoStatus);
         pagamento.setDataPagamento(Instant.now());
 
         pagamentoRepository.save(pagamento);
 
-        return new AutorizacaoDto(pagamento.getPedidoId().toString(), pagamento.getStatus());
+        return new AutorizacaoDto(pagamento.getPedidoId().toString(), novoStatus.name());
     }
-
 
 }

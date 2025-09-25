@@ -1,6 +1,8 @@
 package br.com.mercadoapp.ms_pedidos.service;
 
 import br.com.mercadoapp.ms_pedidos.client.AutorizacaoPagamentoClient;
+//import br.com.mercadoapp.ms_pedidos.client.PagamentoClient;
+import br.com.mercadoapp.ms_pedidos.client.enums.StatusPagamento;
 import br.com.mercadoapp.ms_pedidos.dto.*;
 import br.com.mercadoapp.ms_pedidos.model.ItemPedido;
 import br.com.mercadoapp.ms_pedidos.model.Pedido;
@@ -9,6 +11,8 @@ import br.com.mercadoapp.ms_pedidos.repository.PedidoRepository;
 import br.com.mercadoapp.ms_pedidos.client.ProdutoClient;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,10 +31,16 @@ public class PedidoService {
 
     private final AutorizacaoPagamentoClient autorizacaoPagamentoClient;
 
+    private final Logger logger = LoggerFactory.getLogger(PedidoService.class);
+
+
+    //private final PagamentoClient pagamentoClient;
+
     public PedidoService(PedidoRepository repository, ProdutoClient produtoClient, AutorizacaoPagamentoClient autorizacaoPagamentoClient) {
         this.repository = repository;
         this.produtoClient = produtoClient;
         this.autorizacaoPagamentoClient = autorizacaoPagamentoClient;
+        //this.pagamentoClient = pagamentoClient;
     }
 
     public PedidoResponseDto cadastrarPedido(PedidoRequestDto dto) {
@@ -63,11 +73,12 @@ public class PedidoService {
         // Salvar pedido inicialmente
         Pedido pedidoSalvo = repository.save(pedido);
 
-        // Obter status de pagamento (consulta ao ms-pagamentos via FeignClient)
+
+        // 2. Consultar autorização status de pagamento (consulta ao ms-pagamentos via FeignClient)
         Status statusPagamento = obterStatusPagamento(pedidoSalvo.getId().toString());
         pedidoSalvo.setStatus(statusPagamento);
 
-        // Atualizar pedido com o status correto
+        // 3. Atualizar pedido com o status final
         pedidoSalvo = repository.save(pedidoSalvo);
 
         // Montar e retornar DTO de resposta
@@ -141,12 +152,35 @@ public class PedidoService {
     }
 
     private Status obterStatusPagamento(String id) {
-        AutorizacaoDto autorizacao = autorizacaoPagamentoClient.obterAutorizacao(id);
-        if (autorizacao.status().equalsIgnoreCase("autorizado")) {
-            return Status.PREPARANDO;
-        }
+        try {
+            AutorizacaoDto autorizacao = autorizacaoPagamentoClient.obterAutorizacao(id);
+            if (autorizacao != null) {
+                String s = autorizacao.status();
+                if (s == null) return Status.RECUSADO;
 
+                // aceita variações: PAGO / APROVADO / AUTORIZADO -> PREPARANDO
+                if (s.equalsIgnoreCase("APROVADO") ||
+                        s.equalsIgnoreCase("PAGO") ||
+                        s.equalsIgnoreCase("AUTORIZADO")) {
+                    return Status.PREPARANDO;
+                }
+            }
+        } catch (feign.FeignException e) {
+            logger.warn("Falha ao consultar ms-pagamentos: {} - fallback para RECUSADO", e.status(), e);
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao consultar autorização", e);
+        }
         return Status.RECUSADO;
     }
+
+
+//    private Status obterStatusPagamento(String id) {
+//        AutorizacaoDto autorizacao = autorizacaoPagamentoClient.obterAutorizacao(id);
+//        if (autorizacao.status().equalsIgnoreCase("autorizado")) {
+//            return Status.PREPARANDO;
+//        }
+//
+//        return Status.RECUSADO;
+//    }
 
 }
