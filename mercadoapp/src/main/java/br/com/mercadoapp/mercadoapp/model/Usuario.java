@@ -25,6 +25,9 @@ public class Usuario implements Serializable {
     private String telefone;
 
     @NotBlank
+    private String cpf;
+
+    @NotBlank
     private String email;
 
     @NotNull
@@ -33,9 +36,10 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
-    public Usuario(Long id, String nome, String email, String telefone, String senha) {
+    public Usuario(Long id, String nome, String cpf, String email, String telefone, String senha) {
         this.id = id;
         this.nome = nome;
+        this.cpf = cpf;
         this.email = email;
         this.telefone = telefone;
         this.senha = senha;
@@ -55,6 +59,14 @@ public class Usuario implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getEmail() {

@@ -32,6 +32,7 @@ public class UsuarioService {
         return new UsuarioDto(
                 usuarioEntity.getId(),
                 usuarioEntity.getNome(),
+                usuarioEntity.getCpf(),
                 usuarioEntity.getTelefone(),
                 usuarioEntity.getEmail(),
                 usuarioEntity.getSenha());
