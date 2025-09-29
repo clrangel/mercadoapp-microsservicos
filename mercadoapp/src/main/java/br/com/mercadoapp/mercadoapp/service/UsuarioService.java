@@ -3,6 +3,7 @@ package br.com.mercadoapp.mercadoapp.service;
 import br.com.mercadoapp.mercadoapp.dto.UsuarioDto;
 import br.com.mercadoapp.mercadoapp.model.Usuario;
 import br.com.mercadoapp.mercadoapp.repository.UsuarioRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,16 @@ public class UsuarioService {
         return obj.get();
     }
 
-    public Usuario cadastrarUsuario(Usuario obj) {
-        return repository.save(obj);
+    public UsuarioDto cadastrarUsuario(UsuarioDto usuario) {
+        Usuario usuarioEntity = new Usuario();
+        BeanUtils.copyProperties(usuario, usuarioEntity);
+        repository.save(usuarioEntity);
+        return new UsuarioDto(
+                usuarioEntity.getId(),
+                usuarioEntity.getNome(),
+                usuarioEntity.getTelefone(),
+                usuarioEntity.getEmail(),
+                usuarioEntity.getSenha());
     }
 
     public void deletar(Long id){

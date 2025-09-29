@@ -32,12 +32,14 @@ public class UsuarioController {
 
 
     @PostMapping
-    public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario obj){
-        obj = service.cadastrarUsuario(obj);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/id")
-                .buildAndExpand(obj.getId()).toUri();
+    public ResponseEntity<UsuarioDto> cadastrar(@RequestBody UsuarioDto usuario){
+        usuario = service.cadastrarUsuario(usuario);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(usuario.id())
+                .toUri();
 
-        return ResponseEntity.created(uri).body(obj);
+        return ResponseEntity.created(uri).body(usuario);
     }
 
     @DeleteMapping(value = "/{id}")
