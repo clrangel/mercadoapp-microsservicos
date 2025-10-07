@@ -18,7 +18,7 @@ public class EmailConfig {
     private UsuarioService service;
 
     // Nome da fila que será usada no RabbitMQ
-    @Value("fila.mensagem.usuario")
+    @Value("${fila.mensagem.usuario}")
     private String queue;
 
     // Cria a fila no broker RabbitMQ (durável)
@@ -28,7 +28,7 @@ public class EmailConfig {
     }
 
     // Escuta a fila e processa as mensagens recebidas
-    @RabbitListener(queues = "fila.mensagem.usuario")
+    @RabbitListener(queues = "${fila.mensagem.usuario}")
     private void enviaEmail(@Payload EmailDto mensagem){
         System.out.println(mensagem);
         service.enviarMensagem(mensagem);

@@ -66,7 +66,7 @@ public class UsuarioService {
         if (usuario.isPresent()) {
             SimpleMailMessage enviaMensagem = new SimpleMailMessage();
 
-            enviaMensagem.setFrom("SEU-EMAIL@gmail.com"); // Quem envia o e-mail
+            enviaMensagem.setFrom("digiteOemail@"); // Quem envia o e-mail
             enviaMensagem.setTo(usuario.get().getEmail()); // Para quem será enviado. Pega o e-mail do usuário encontrado no banco.
             enviaMensagem.setSubject("Status do pedido " + mensagem.pedidoId()); // Assunto
             enviaMensagem.setText("O pedido está: " + mensagem.status()); // Corpo da mensagem mostrando o status do pedido.

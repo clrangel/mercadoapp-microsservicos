@@ -7,6 +7,7 @@ import br.com.mercadoapp.ms_pedidos.dto.*;
 import br.com.mercadoapp.ms_pedidos.model.ItemPedido;
 import br.com.mercadoapp.ms_pedidos.model.Pedido;
 import br.com.mercadoapp.ms_pedidos.model.Status;
+import br.com.mercadoapp.ms_pedidos.producer.UsuarioProducer;
 import br.com.mercadoapp.ms_pedidos.repository.PedidoRepository;
 import br.com.mercadoapp.ms_pedidos.client.ProdutoClient;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,13 +34,16 @@ public class PedidoService {
 
     private final Logger logger = LoggerFactory.getLogger(PedidoService.class);
 
+    private final UsuarioProducer producer;
+
 
     //private final PagamentoClient pagamentoClient;
 
-    public PedidoService(PedidoRepository repository, ProdutoClient produtoClient, AutorizacaoPagamentoClient autorizacaoPagamentoClient) {
+    public PedidoService(PedidoRepository repository, ProdutoClient produtoClient, AutorizacaoPagamentoClient autorizacaoPagamentoClient, UsuarioProducer producer) {
         this.repository = repository;
         this.produtoClient = produtoClient;
         this.autorizacaoPagamentoClient = autorizacaoPagamentoClient;
+        this.producer = producer;
         //this.pagamentoClient = pagamentoClient;
     }
 
@@ -80,6 +84,12 @@ public class PedidoService {
 
         // 3. Atualizar pedido com o status final
         pedidoSalvo = repository.save(pedidoSalvo);
+
+        producer.enviarEmail(new EmailDto(
+                "Carol L", //Nome fictício para teste
+                "123.456.789-10", //CPF fictício para teste
+                pedido.getId().toString(),
+                pedido.getStatus().toString()));
 
         // Montar e retornar DTO de resposta
         return new PedidoResponseDto(
